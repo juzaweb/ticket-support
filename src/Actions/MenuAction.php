@@ -62,7 +62,7 @@ class MenuAction extends Action
                 'params' => [
                     'name' => 'Author name submit ticket',
                     'email' => 'Author email submit ticket',
-                    'ticket' => 'Ticket title',
+                    'ticket' => 'Title Ticket',
                 ],
             ]
         );
@@ -74,7 +74,7 @@ class MenuAction extends Action
                 'params' => [
                     'name' => 'Author name comment ticket',
                     'email' => 'Author email comment ticket',
-                    'ticket' => 'Ticket title',
+                    'ticket' => 'Title Ticket',
                 ],
             ]
         );

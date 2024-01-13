@@ -36,7 +36,7 @@ class TicketSupportTypeController extends PageController
         return Validator::make(
             $attributes,
             [
-                // Rules
+                'name' => ['required', 'string', 'max:100'],
             ]
         );
     }

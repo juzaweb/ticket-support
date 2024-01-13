@@ -68,9 +68,9 @@ class TicketSupport extends Model
 
     protected $appends = ['status_label'];
 
-    const STATUS_PENDING = 'pending';
-    const STATUS_REPLIED = 'replied';
-    const STATUS_CLOSE = 'close';
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_REPLIED = 'replied';
+    public const STATUS_CLOSE = 'close';
 
     public static function getStatuses(): array
     {

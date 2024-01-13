@@ -2,15 +2,18 @@
 
 @section('content')
     <div class="row">
-        <div class="col-md-12">
-            <div class="btn-group float-right">
-                <a href="{{ $linkCreate }}" class="btn btn-success">
-                    <i class="fa fa-plus-circle"></i> {{ trans('cms::app.add_new') }}
-                </a>
-            </div>
+        <div class="col-md-4">
+            @component('cms::components.form', [])
+
+                {{ Field::text(trans('cms::app.name'), 'name', ['required' => true, 'validators' => ['required']]) }}
+
+                <button class="btn btn-success">{{ __('Add Type') }}</button>
+
+            @endcomponent
+        </div>
+
+        <div class="col-md-8">
+            {{ $dataTable->render() }}
         </div>
     </div>
-
-    {{ $dataTable->render() }}
-
 @endsection

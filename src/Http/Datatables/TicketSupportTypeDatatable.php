@@ -2,7 +2,7 @@
 
 namespace Juzaweb\TicketSupport\Http\Datatables;
 
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Support\Arr;
 use Juzaweb\CMS\Abstracts\DataTable;
 use Juzaweb\TicketSupport\Models\TicketSupportType;
@@ -14,7 +14,7 @@ class TicketSupportTypeDatatable extends DataTable
      *
      * @return array
      */
-    public function columns()
+    public function columns(): array
     {
         return [
             'name' => [
@@ -35,10 +35,10 @@ class TicketSupportTypeDatatable extends DataTable
     /**
      * Query data datatable
      *
-     * @param array $data
+     * @param  array  $data
      * @return Builder
      */
-    public function query($data)
+    public function query(array $data): Builder
     {
         $query = TicketSupportType::query();
 
@@ -51,7 +51,7 @@ class TicketSupportTypeDatatable extends DataTable
         return $query;
     }
 
-    public function bulkActions($action, $ids)
+    public function bulkActions($action, $ids): void
     {
         switch ($action) {
             case 'delete':
