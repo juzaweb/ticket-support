@@ -26,6 +26,8 @@ class SubmitTicketRequest extends FormRequest
                 'content' => ['required'],
                 'support_type_id' => ['required', Rule::modelExists(TicketSupportType::class)],
                 'product_id' => ['nullable', Rule::modelExists(Post::class)],
+                'files' => ['nullable', 'array'],
+                'files.*' => ['file', 'max:5120'],
             ]
         );
     }

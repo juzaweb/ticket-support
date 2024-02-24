@@ -13,6 +13,7 @@ namespace Juzaweb\TicketSupport\Http\Controllers\Frontend;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Juzaweb\CMS\Events\EmailHook;
 use Juzaweb\CMS\Http\Controllers\FrontendController;
 use Juzaweb\TicketSupport\Events\CreateTicketSupportSuccess;
@@ -86,6 +87,15 @@ class TicketSupportController extends FrontendController
         $model = $this->ticketSupportRepository->create(
             $request->safe()->all()
         );
+
+        if ($files = $request->file('files')) {
+            collect($files)->map(
+                function ($file) use ($model) {
+                    $path = Storage::disk('public')->put('ticket-supports', $file);
+                    $model->attachments()->create(['path' => $path]);
+                }
+            );
+        }
 
         event(new CreateTicketSupportSuccess($model));
 

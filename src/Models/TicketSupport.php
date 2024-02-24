@@ -59,12 +59,9 @@ class TicketSupport extends Model
         'title',
         'content',
         'created_by',
-        'attachments',
         'product_id',
         'status',
     ];
-
-    protected $casts = ['attachments' => 'array'];
 
     protected $appends = ['status_label'];
 
@@ -84,6 +81,11 @@ class TicketSupport extends Model
     public function comments(): HasMany
     {
         return $this->hasMany(TicketSupportComment::class, 'ticket_support_id', 'id');
+    }
+
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(TicketSupportAttachment::class, 'ticket_support_id', 'id');
     }
 
     public function product(): BelongsTo
