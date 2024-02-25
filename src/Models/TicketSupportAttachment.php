@@ -22,8 +22,12 @@ use Juzaweb\CMS\Models\Model;
  */
 class TicketSupportAttachment extends Model
 {
+    public $timestamps = false;
     protected $table = 'jwts_ticket_support_attachments';
     protected $fillable = [
         'path',
+        'name',
+        'extension',
+        'minetype',
     ];
 }

@@ -11,22 +11,11 @@ class FrontendAction extends Action
 {
     public function handle(): void
     {
-        $this->addAction(Action::FRONTEND_CALL_ACTION, [$this, 'enqueueStyles']);
         $this->addAction(Action::FRONTEND_INIT, [$this, 'registerProfilePages']);
-    }
-
-    public function enqueueStyles(): void
-    {
-        $this->hookAction->enqueueFrontendScript(
-            'core-tinymce',
-            'jw-styles/juzaweb/tinymce/tinymce.min.js'
-        );
     }
 
     public function registerProfilePages(): void
     {
-        $user = request()->user();
-
         $this->hookAction->registerProfilePage(
             'list-ticket-support',
             [

@@ -25,7 +25,9 @@ return new class extends Migration {
                 $table->bigIncrements('id');
                 $table->foreignUuid('ticket_support_id')->constrained('jwts_ticket_supports');
                 $table->string('path');
-                $table->timestamps();
+                $table->string('name');
+                $table->string('extension');
+                $table->string('minetype');
             }
         );
     }

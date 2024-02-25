@@ -89,12 +89,17 @@ class TicketSupportController extends FrontendController
         );
 
         if ($files = $request->file('files')) {
-            collect($files)->map(
-                function ($file) use ($model) {
-                    $path = Storage::disk('public')->put('ticket-supports', $file);
-                    $model->attachments()->create(['path' => $path]);
-                }
-            );
+            foreach ($files as $file) {
+                $path = Storage::disk('protected')->put('ticket-supports', $file);
+                $model->attachments()->create(
+                    [
+                        'path' => $path,
+                        'name' => $file->getClientOriginalName(),
+                        'extension' => $file->extension(),
+                        'minetype' => $file->getMimeType(),
+                    ]
+                );
+            }
         }
 
         event(new CreateTicketSupportSuccess($model));
