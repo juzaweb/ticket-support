@@ -10,9 +10,11 @@
 
 namespace Juzaweb\TicketSupport\Http\Controllers\Frontend;
 
+use File;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Juzaweb\CMS\Events\EmailHook;
 use Juzaweb\CMS\Http\Controllers\FrontendController;
 use Juzaweb\TicketSupport\Events\CreateTicketSupportSuccess;
@@ -87,6 +89,27 @@ class TicketSupportController extends FrontendController
             $request->safe()->all()
         );
 
+        if ($files = $request->file('files')) {
+            foreach ($files as $file) {
+                $extension = $file->extension();
+                $originalFileName = $file->getClientOriginalName();
+                $baseName = pathinfo($originalFileName, PATHINFO_FILENAME);
+                $path = 'ticket-supports/'. date('Y/m/d');
+
+                $nameFile = $this->getUniqueFileUpload($path, $baseName, $extension);
+                $path = Storage::disk('protected')->putFileAs($path, $file, $nameFile);
+
+                $model->attachments()->create(
+                    [
+                        'path' => $path,
+                        'name' => $originalFileName,
+                        'extension' => $file->extension(),
+                        'minetype' => $file->getMimeType(),
+                    ]
+                );
+            }
+        }
+
         event(new CreateTicketSupportSuccess($model));
 
         event(
@@ -104,5 +127,19 @@ class TicketSupportController extends FrontendController
         );
 
         return $model;
+    }
+
+    private function getUniqueFileUpload(string $path, string $baseName, string $extension): string
+    {
+        $fileName = $baseName.'.'.$extension;
+        $newFile = Storage::disk('protected')->path($path.'/'.$fileName);
+
+        $i = 1;
+        while (File::isFile($newFile)) {
+            $fileName = $baseName.'-'.$i++.'.'.$extension;
+            $newFile = Storage::disk('protected')->path($path.'/'.$fileName);
+        }
+
+        return $fileName;
     }
 }

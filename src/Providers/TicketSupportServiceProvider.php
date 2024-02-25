@@ -4,6 +4,7 @@ namespace Juzaweb\TicketSupport\Providers;
 
 use Juzaweb\CMS\Support\ServiceProvider;
 use Juzaweb\TicketSupport\Actions\AjaxAction;
+use Juzaweb\TicketSupport\Actions\FrontendAction;
 use Juzaweb\TicketSupport\Actions\MenuAction;
 use Juzaweb\TicketSupport\Repositories\TicketSupportCommentRepository;
 use Juzaweb\TicketSupport\Repositories\TicketSupportCommentRepositoryEloquent;
@@ -22,7 +23,7 @@ class TicketSupportServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        $this->registerHookActions([MenuAction::class, AjaxAction::class]);
+        $this->registerHookActions([MenuAction::class, AjaxAction::class, FrontendAction::class]);
     }
 
     public function register()
