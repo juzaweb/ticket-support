@@ -10,6 +10,7 @@
 
 namespace Juzaweb\TicketSupport\Http\Controllers\Frontend;
 
+use File;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
@@ -90,11 +91,18 @@ class TicketSupportController extends FrontendController
 
         if ($files = $request->file('files')) {
             foreach ($files as $file) {
-                $path = Storage::disk('protected')->put('ticket-supports', $file);
+                $extension = $file->extension();
+                $originalFileName = $file->getClientOriginalName();
+                $baseName = pathinfo($originalFileName, PATHINFO_FILENAME);
+                $path = 'ticket-supports/'. date('Y/m/d');
+
+                $nameFile = $this->getUniqueFileUpload($path, $baseName, $extension);
+                $path = Storage::disk('protected')->putFileAs($path, $file, $nameFile);
+
                 $model->attachments()->create(
                     [
                         'path' => $path,
-                        'name' => $file->getClientOriginalName(),
+                        'name' => $originalFileName,
                         'extension' => $file->extension(),
                         'minetype' => $file->getMimeType(),
                     ]
@@ -119,5 +127,19 @@ class TicketSupportController extends FrontendController
         );
 
         return $model;
+    }
+
+    private function getUniqueFileUpload(string $path, string $baseName, string $extension): string
+    {
+        $fileName = $baseName.'.'.$extension;
+        $newFile = Storage::disk('protected')->path($path.'/'.$fileName);
+
+        $i = 1;
+        while (File::isFile($newFile)) {
+            $fileName = $baseName.'-'.$i++.'.'.$extension;
+            $newFile = Storage::disk('protected')->path($path.'/'.$fileName);
+        }
+
+        return $fileName;
     }
 }
