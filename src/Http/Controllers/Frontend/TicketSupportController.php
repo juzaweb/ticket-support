@@ -13,6 +13,7 @@ namespace Juzaweb\TicketSupport\Http\Controllers\Frontend;
 use File;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Juzaweb\CMS\Events\EmailHook;
@@ -22,6 +23,7 @@ use Juzaweb\TicketSupport\Http\Requests\Frontend\SubmitCommentRequest;
 use Juzaweb\TicketSupport\Http\Requests\Frontend\SubmitTicketRequest;
 use Juzaweb\TicketSupport\Http\Resources\TicketSupportCommentResource;
 use Juzaweb\TicketSupport\Models\TicketSupport;
+use Juzaweb\TicketSupport\Repositories\TicketSupportAttachmentRepository;
 use Juzaweb\TicketSupport\Repositories\TicketSupportCommentRepository;
 use Juzaweb\TicketSupport\Repositories\TicketSupportRepository;
 
@@ -29,7 +31,8 @@ class TicketSupportController extends FrontendController
 {
     public function __construct(
         protected TicketSupportRepository $ticketSupportRepository,
-        protected TicketSupportCommentRepository $ticketSupportCommentRepository
+        protected TicketSupportCommentRepository $ticketSupportCommentRepository,
+        protected TicketSupportAttachmentRepository $ticketSupportAttachmentRepository
     ) {
     }
 
@@ -38,6 +41,18 @@ class TicketSupportController extends FrontendController
         DB::transaction(fn() => $this->createTicketSupport($request));
 
         return $this->success(['message' => 'Ticket submit successful.']);
+    }
+
+    public function downAttachment(Request $request, string $id, int $attachmentId)
+    {
+        $ticket = $this->ticketSupportRepository->find($id);
+        $attachment = $this->ticketSupportAttachmentRepository->withFilters(['ticket_support_id' => $id])->find($attachmentId);
+        abort_if($ticket->created_by != $request->user()->id, 403);
+
+        if (!File::isFile(Storage::disk('protected')->path($attachment->path))) {
+            abort(404);
+        }
+        return Storage::disk('protected')->download($attachment->path);
     }
 
     public function comment(SubmitCommentRequest $request, string $id): JsonResponse|RedirectResponse
@@ -56,6 +71,27 @@ class TicketSupportController extends FrontendController
                 );
 
                 $ticket->update(['status' => TicketSupport::STATUS_PENDING]);
+                if ($files = $request->file('files')) {
+                    foreach ($files as $file) {
+                        $extension = $file->extension();
+                        $originalFileName = $file->getClientOriginalName();
+                        $baseName = pathinfo($originalFileName, PATHINFO_FILENAME);
+                        $path = 'ticket-supports/'. date('Y/m/d');
+
+                        $nameFile = $this->getUniqueFileUpload($path, $baseName, $extension);
+                        $path = Storage::disk('protected')->putFileAs($path, $file, $nameFile);
+
+                        $model->attachments()->create(
+                            [
+                                'ticket_support_id' => $id,
+                                'path' => $path,
+                                'name' => $originalFileName,
+                                'extension' => $file->extension(),
+                                'minetype' => $file->getMimeType(),
+                            ]
+                        );
+                    }
+                }
 
                 event(
                     new EmailHook(

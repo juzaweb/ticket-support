@@ -29,6 +29,7 @@ class TicketSupportResource extends JsonResource
             'status' => $this->resource->status,
             'status_label' => $this->resource->status_label,
             'product_id' => $this->resource->product_id,
+            'attachments' => TicketSupportAttachmentCollection::make($this->resource->attachments),
             'created_at' => jw_date_format($this->resource->created_at),
         ];
     }

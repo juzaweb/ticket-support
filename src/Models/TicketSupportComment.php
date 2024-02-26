@@ -3,6 +3,7 @@
 namespace Juzaweb\TicketSupport\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Juzaweb\CMS\Models\Model;
 use Juzaweb\CMS\Models\User;
 use Juzaweb\CMS\Traits\UseChangeBy;
@@ -39,12 +40,14 @@ class TicketSupportComment extends Model
 
     protected $fillable = [
         'content',
-        'attachments',
         'ticket_support_id',
         'created_by',
     ];
 
-    protected $casts = ['attachments' => 'array'];
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(TicketSupportAttachment::class, 'comment_id', 'id');
+    }
 
     public function ticket(): BelongsTo
     {

@@ -9,3 +9,8 @@ Route::group(
         Route::post('/{id}/comment', [TicketSupportController::class, 'comment'])->name('jwts.ticket-support.comment');
     }
 );
+
+Route::get(
+    'ticket-support/{id}/{attachmentId}/down-attachments',
+    [TicketSupportController::class, 'downAttachment']
+)->name('jwts.ticket-support.down-attachment');
