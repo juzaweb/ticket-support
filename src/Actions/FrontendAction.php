@@ -25,7 +25,7 @@ class FrontendAction extends Action
             'ticket-supports',
             [
                'title' => __('List Ticket Support'),
-               'contents' => 'jwts::frontend.profile.list_ticket_support',
+               'contents' => 'jwts::frontend.profile.ticket_support',
                'data' => [
                     'ticketSupports' => function () use ($user) {
                         $posts = TicketSupport::with('type')->where(['created_by' => $user->id])->paginate(10);

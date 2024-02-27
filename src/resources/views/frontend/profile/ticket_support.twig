@@ -25,7 +25,9 @@
                     </div>
                     {% for attachment in ticketSupport.attachments %}
                         <div class="col-md-3">
-                            <a href="" target="_blank">{{ attachment.name }}</a>
+                            <a href="{{ url('ajax/ticket-support/'~ticketSupport.id~'/'~attachment.id~'/download-attachments')}}"
+                                class="download-attachment"
+                            >{{ attachment.name }}</a>
                         </div>
                     {% endfor %}
                 </div>
@@ -44,8 +46,8 @@
                             </div>
                             {% for attachment in comment.attachments %}
                                 <div class="col-md-3">
-                                    <a href="{{ url('ticket-support/'~ticketSupport.id~'/'~attachment.id~'/down-attachments')}}"
-                                        target="_blank"
+                                    <a href="{{ url('ajax/ticket-support/'~ticketSupport.id~'/'~attachment.id~'/download-attachments')}}"
+                                        class="download-attachment"
                                     >{{ attachment.name }}</a>
                                 </div>
                             {% endfor %}
@@ -113,4 +115,19 @@
             window.location.href = "{{ url('profile/ticket-supports') }}";
         }
     }
+
+    $(document).ready(function() {
+        $('.download-attachment').click(function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: window.location.href = $(this).attr('href'),
+                type: 'GET',
+                success: function(response) {
+                },
+                error: function(xhr, status, error) {
+                    alert(error);
+                }
+            });
+        })
+    })
 </script>

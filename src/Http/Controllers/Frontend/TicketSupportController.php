@@ -43,7 +43,7 @@ class TicketSupportController extends FrontendController
         return $this->success(['message' => 'Ticket submit successful.']);
     }
 
-    public function downAttachment(Request $request, string $id, int $attachmentId)
+    public function downloadAttachment(Request $request, string $id, int $attachmentId)
     {
         $ticket = $this->ticketSupportRepository->find($id);
         $attachment = $this->ticketSupportAttachmentRepository->withFilters(['ticket_support_id' => $id])->find($attachmentId);
