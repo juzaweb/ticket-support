@@ -29,5 +29,7 @@ class TicketSupportAttachment extends Model
         'name',
         'extension',
         'minetype',
+        'ticket_support_id',
+        'comment_id',
     ];
 }

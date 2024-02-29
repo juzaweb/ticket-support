@@ -6,6 +6,8 @@ use Juzaweb\CMS\Support\ServiceProvider;
 use Juzaweb\TicketSupport\Actions\AjaxAction;
 use Juzaweb\TicketSupport\Actions\FrontendAction;
 use Juzaweb\TicketSupport\Actions\MenuAction;
+use Juzaweb\TicketSupport\Repositories\TicketSupportAttachmentRepository;
+use Juzaweb\TicketSupport\Repositories\TicketSupportAttachmentRepositoryEloquent;
 use Juzaweb\TicketSupport\Repositories\TicketSupportCommentRepository;
 use Juzaweb\TicketSupport\Repositories\TicketSupportCommentRepositoryEloquent;
 use Juzaweb\TicketSupport\Repositories\TicketSupportRepository;
@@ -19,6 +21,7 @@ class TicketSupportServiceProvider extends ServiceProvider
         TicketSupportTypeRepository::class => TicketSupportTypeRepositoryEloquent::class,
         TicketSupportRepository::class => TicketSupportRepositoryEloquent::class,
         TicketSupportCommentRepository::class => TicketSupportCommentRepositoryEloquent::class,
+        TicketSupportAttachmentRepository::class => TicketSupportAttachmentRepositoryEloquent::class,
     ];
 
     public function boot()

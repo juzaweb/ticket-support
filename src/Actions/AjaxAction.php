@@ -14,7 +14,7 @@ class AjaxAction extends Action
      */
     public function handle(): void
     {
-        //$this->addAction(Action::FRONTEND_INIT, [$this, 'addFrontendAjax']);
+        $this->addAction(Action::FRONTEND_INIT, [$this, 'addFrontendAjax']);
     }
 
     /**
@@ -22,21 +22,30 @@ class AjaxAction extends Action
      */
     public function addFrontendAjax(): void
     {
-        $this->hookAction->registerFrontendAjax(
-            'ticket-support.submit',
-            [
-                'auth' => true,
-                'method' => 'post',
-                'callback' => [TicketSupportController::class, 'submit'],
-            ]
-        );
+        // $this->hookAction->registerFrontendAjax(
+        //     'ticket-support.submit',
+        //     [
+        //         'auth' => true,
+        //         'method' => 'post',
+        //         'callback' => [TicketSupportController::class, 'submit'],
+        //     ]
+        // );
+
+        // $this->hookAction->registerFrontendAjax(
+        //     'ticket-support.comment',
+        //     [
+        //         'auth' => true,
+        //         'method' => 'post',
+        //         'callback' => [TicketSupportController::class, 'submit'],
+        //     ]
+        // );
 
         $this->hookAction->registerFrontendAjax(
-            'ticket-support.comment',
+            'ticket-support.download-attachments',
             [
                 'auth' => true,
-                'method' => 'post',
-                'callback' => [TicketSupportController::class, 'submit'],
+                'method' => 'get',
+                'callback' => [TicketSupportController::class, 'downloadAttachment'],
             ]
         );
     }
