@@ -9,7 +9,7 @@
             <div class="col-md-12">
                 <div class="form-group">
                     <label>{{ __('Type') }}</label>
-                    <input type="text" class="form-control" placeholder="{{ __('Title') }}" disabled value="{{ ticketSupport.type.name }}">
+                    <input type="text" class="form-control" placeholder="{{ __('Type') }}" disabled value="{{ ticketSupport.type.name }}">
                 </div>
                 <div class="form-group">
                     <label>{{ __('Title') }}</label>
@@ -17,7 +17,7 @@
                 </div>
                 <div class="form-group">
                     <label>{{ __('Content') }}</label>
-                    <textarea rows="5" style="width: 100%;" disabled>{{ ticketSupport.content }}</textarea>
+                    <textarea class="form-control" rows="5" disabled>{{ ticketSupport.content }}</textarea>
                 </div>
                 <div class="row">
                     <div class="col-md-12">
@@ -25,7 +25,7 @@
                     </div>
                     {% for attachment in ticketSupport.attachments %}
                         <div class="col-md-3">
-                            <a href="{{ url('ajax/ticket-support/'~ticketSupport.id~'/'~attachment.id~'/download-attachments')}}"
+                            <a href="{{ url('ajax/ticket-support/download-attachments')~'?ticket_support_id='~ticketSupport.id~'&attachment_id='~attachment.id }}"
                                 class="download-attachment"
                             >{{ attachment.name }}</a>
                         </div>
@@ -37,7 +37,7 @@
                     {% for comment in ticketSupportComments %}
                         <div class="form-group">
                             <label for="comment">{{ __('Content') }}</label>
-                            <textarea id="comment" rows="5" style="width: 100%;" disabled>{{ comment.content }}</textarea>
+                            <textarea class="form-control" id="comment" rows="5" disabled>{{ comment.content }}</textarea>
                         </div>
 
                         <div class="row">
@@ -46,7 +46,7 @@
                             </div>
                             {% for attachment in comment.attachments %}
                                 <div class="col-md-3">
-                                    <a href="{{ url('ajax/ticket-support/'~ticketSupport.id~'/'~attachment.id~'/download-attachments')}}"
+                                    <a href="{{ url('ajax/ticket-support/download-attachments')~'?ticket_support_id='~ticketSupport.id~'&attachment_id='~attachment.id }}"
                                         class="download-attachment"
                                     >{{ attachment.name }}</a>
                                 </div>
@@ -57,7 +57,7 @@
                 </div>
                 <div class="form-group">
                     <label for="comment">{{ __('Comment') }}</label>
-                    <textarea id="comment" rows="9" style="width: 100%;" name="content" required="">{{ ticketSupport.comment }}</textarea>
+                    <textarea class="form-control" id="comment" rows="9" name="content" required="">{{ ticketSupport.comment }}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="files">{{ __('Attachments') }}</label>
@@ -115,19 +115,4 @@
             window.location.href = "{{ url('profile/ticket-supports') }}";
         }
     }
-
-    $(document).ready(function() {
-        $('.download-attachment').click(function(e) {
-            e.preventDefault();
-            $.ajax({
-                url: window.location.href = $(this).attr('href'),
-                type: 'GET',
-                success: function(response) {
-                },
-                error: function(xhr, status, error) {
-                    alert(error);
-                }
-            });
-        })
-    })
 </script>

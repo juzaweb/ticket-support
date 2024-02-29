@@ -10,7 +10,6 @@
 
 namespace Juzaweb\TicketSupport\Http\Controllers\Frontend;
 
-use File;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -43,13 +42,16 @@ class TicketSupportController extends FrontendController
         return $this->success(['message' => 'Ticket submit successful.']);
     }
 
-    public function downloadAttachment(Request $request, string $id, int $attachmentId)
+    public function downloadAttachment(Request $request)
     {
-        $ticket = $this->ticketSupportRepository->find($id);
-        $attachment = $this->ticketSupportAttachmentRepository->withFilters(['ticket_support_id' => $id])->find($attachmentId);
+        $ticketSupportId = $request->input('ticket_support_id');
+        $attachmentId = $request->input('attachment_id');
+        $ticket = $this->ticketSupportRepository->find($ticketSupportId);
+        $attachment = $this->ticketSupportAttachmentRepository->withFilters(['ticket_support_id' => $ticketSupportId])
+            ->find($attachmentId);
         abort_if($ticket->created_by != $request->user()->id, 403);
 
-        if (!File::isFile(Storage::disk('protected')->path($attachment->path))) {
+        if (!Storage::disk('protected')->exists($attachment->path)) {
             abort(404);
         }
         return Storage::disk('protected')->download($attachment->path);
@@ -78,14 +80,14 @@ class TicketSupportController extends FrontendController
                         $baseName = pathinfo($originalFileName, PATHINFO_FILENAME);
                         $path = 'ticket-supports/'. date('Y/m/d');
 
-                        $nameFile = $this->getUniqueFileUpload($path, $baseName, $extension);
-                        $path = Storage::disk('protected')->putFileAs($path, $file, $nameFile);
+                        $fileName = $this->getUniqueFileUpload($path, $baseName, $extension);
+                        $path = Storage::disk('protected')->putFileAs($path, $file, $fileName);
 
                         $model->attachments()->create(
                             [
                                 'ticket_support_id' => $id,
                                 'path' => $path,
-                                'name' => $originalFileName,
+                                'name' => $fileName,
                                 'extension' => $file->extension(),
                                 'minetype' => $file->getMimeType(),
                             ]
@@ -132,13 +134,13 @@ class TicketSupportController extends FrontendController
                 $baseName = pathinfo($originalFileName, PATHINFO_FILENAME);
                 $path = 'ticket-supports/'. date('Y/m/d');
 
-                $nameFile = $this->getUniqueFileUpload($path, $baseName, $extension);
-                $path = Storage::disk('protected')->putFileAs($path, $file, $nameFile);
+                $fileName = $this->getUniqueFileUpload($path, $baseName, $extension);
+                $path = Storage::disk('protected')->putFileAs($path, $file, $fileName);
 
                 $model->attachments()->create(
                     [
                         'path' => $path,
-                        'name' => $originalFileName,
+                        'name' => $fileName,
                         'extension' => $file->extension(),
                         'minetype' => $file->getMimeType(),
                     ]
@@ -168,12 +170,9 @@ class TicketSupportController extends FrontendController
     private function getUniqueFileUpload(string $path, string $baseName, string $extension): string
     {
         $fileName = $baseName.'.'.$extension;
-        $newFile = Storage::disk('protected')->path($path.'/'.$fileName);
-
         $i = 1;
-        while (File::isFile($newFile)) {
+        while (Storage::disk('protected')->exists($path.'/'.$fileName)) {
             $fileName = $baseName.'-'.$i++.'.'.$extension;
-            $newFile = Storage::disk('protected')->path($path.'/'.$fileName);
         }
 
         return $fileName;

@@ -7,9 +7,5 @@ Route::group(
     function () {
         Route::post('/submit', [TicketSupportController::class, 'submit'])->name('jwts.ticket-support.submit');
         Route::post('/{id}/comment', [TicketSupportController::class, 'comment'])->name('jwts.ticket-support.comment');
-        Route::get(
-            '/{id}/{attachmentId}/download-attachments',
-            [TicketSupportController::class, 'downloadAttachment']
-        )->name('jwts.ticket-support.download-attachment');
     }
 );
