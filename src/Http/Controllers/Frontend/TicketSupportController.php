@@ -25,6 +25,7 @@ use Juzaweb\TicketSupport\Models\TicketSupport;
 use Juzaweb\TicketSupport\Repositories\TicketSupportAttachmentRepository;
 use Juzaweb\TicketSupport\Repositories\TicketSupportCommentRepository;
 use Juzaweb\TicketSupport\Repositories\TicketSupportRepository;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TicketSupportController extends FrontendController
 {
@@ -42,18 +43,20 @@ class TicketSupportController extends FrontendController
         return $this->success(['message' => 'Ticket submit successful.']);
     }
 
-    public function downloadAttachment(Request $request)
+    public function downloadAttachment(Request $request): StreamedResponse
     {
         $ticketSupportId = $request->input('ticket_support_id');
         $attachmentId = $request->input('attachment_id');
         $ticket = $this->ticketSupportRepository->find($ticketSupportId);
         $attachment = $this->ticketSupportAttachmentRepository->withFilters(['ticket_support_id' => $ticketSupportId])
             ->find($attachmentId);
+
         abort_if($ticket->created_by != $request->user()->id, 403);
 
         if (!Storage::disk('protected')->exists($attachment->path)) {
             abort(404);
         }
+
         return Storage::disk('protected')->download($attachment->path);
     }
 
