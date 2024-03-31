@@ -3,7 +3,7 @@
     "homepage": "https://juzaweb.com",
     "type": "juzaweb-plugin",
     "license": "MIT",
-    "description": "Make and managment Ticket support easy for Juzaweb CMS",
+    "description": "Open and management support tickets for your websites",
     "extra": {
         "juzaweb": {
             "name": "Ticket Support",
