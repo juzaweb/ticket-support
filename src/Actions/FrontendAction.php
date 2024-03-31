@@ -1,4 +1,5 @@
 <?php
+
 namespace Juzaweb\TicketSupport\Actions;
 
 use Juzaweb\CMS\Abstracts\Action;
@@ -22,13 +23,16 @@ class FrontendAction extends Action
         $user = request()->user();
 
         $this->hookAction->registerProfilePage(
-            'ticket-supports',
+            'support-tickets',
             [
-               'title' => __('List Ticket Support'),
-               'contents' => 'jwts::frontend.profile.ticket_support.index',
-               'data' => [
+                'title' => __('Support Tickets'),
+                'icon' => 'help-circle',
+                'contents' => 'jwts::frontend.profile.ticket_support.index',
+                'data' => [
                     'ticketSupports' => function () use ($user) {
-                        $posts = TicketSupport::with('type')->where(['created_by' => $user->id])->paginate(10);
+                        $posts = TicketSupport::with(['type', 'user'])
+                            ->where(['created_by' => $user->id])
+                            ->paginate(10);
 
                         return TicketSupportCollection::make($posts)
                             ->response()
@@ -38,7 +42,9 @@ class FrontendAction extends Action
                         if ($id = request()->input('id')) {
                             $ticketSupport = TicketSupport::with(
                                 [
-                                    'attachments' => fn ($q) => $q->whereNull('comment_id'),
+                                    'attachments' => fn($q) => $q->whereNull('comment_id'),
+                                    'type',
+                                    'user',
                                 ]
                             )->find($id);
 
@@ -50,7 +56,8 @@ class FrontendAction extends Action
                     },
                     'ticketSupportComments' => function () {
                         if ($id = request()->input('id')) {
-                            $commemts = TicketSupportComment::with('attachments')->where('ticket_support_id', $id)->get();
+                            $commemts = TicketSupportComment::with('attachments')->where('ticket_support_id',
+                                $id)->get();
 
                             return TicketSupportCommentCollection::make($commemts)
                                 ->response()
@@ -63,9 +70,10 @@ class FrontendAction extends Action
         );
 
         $this->hookAction->registerProfilePage(
-            'ticket-supports.create',
+            'support-tickets.create',
             [
                'title' => __('Create Ticket Support'),
+                'show_menu' => false,
                'contents' => 'jwts::frontend.profile.ticket_support.create',
                'data' => [
                     'types' => function () {

@@ -22,6 +22,7 @@ class TicketSupportResource extends JsonResource
             'content' => htmlentities($this->resource->content),
             'created_by' => [
                 'name' => $this->resource->createdBy?->name,
+                'email' => $this->resource->createdBy?->email,
             ],
             'type' => [
                 'name' => $this->resource->type?->name,

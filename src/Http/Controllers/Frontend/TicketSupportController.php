@@ -21,7 +21,9 @@ use Juzaweb\TicketSupport\Events\CreateTicketSupportSuccess;
 use Juzaweb\TicketSupport\Http\Requests\Frontend\SubmitCommentRequest;
 use Juzaweb\TicketSupport\Http\Requests\Frontend\SubmitTicketRequest;
 use Juzaweb\TicketSupport\Http\Resources\TicketSupportCommentResource;
+use Juzaweb\TicketSupport\Http\Resources\TicketSupportTypeCollection;
 use Juzaweb\TicketSupport\Models\TicketSupport;
+use Juzaweb\TicketSupport\Models\TicketSupportType;
 use Juzaweb\TicketSupport\Repositories\TicketSupportAttachmentRepository;
 use Juzaweb\TicketSupport\Repositories\TicketSupportCommentRepository;
 use Juzaweb\TicketSupport\Repositories\TicketSupportRepository;
@@ -34,6 +36,17 @@ class TicketSupportController extends FrontendController
         protected TicketSupportCommentRepository $ticketSupportCommentRepository,
         protected TicketSupportAttachmentRepository $ticketSupportAttachmentRepository
     ) {
+    }
+
+    public function create()
+    {
+        $types = TicketSupportType::get();
+
+        $types = TicketSupportTypeCollection::make($types)
+            ->response()
+            ->getData(true)['data'];
+
+        return view('theme::profile.index', compact('types'));
     }
 
     public function submit(SubmitTicketRequest $request): JsonResponse|RedirectResponse
@@ -81,7 +94,7 @@ class TicketSupportController extends FrontendController
                         $extension = $file->extension();
                         $originalFileName = $file->getClientOriginalName();
                         $baseName = pathinfo($originalFileName, PATHINFO_FILENAME);
-                        $path = 'ticket-supports/'. date('Y/m/d');
+                        $path = 'ticket-supports/'.date('Y/m/d');
 
                         $fileName = $this->getUniqueFileUpload($path, $baseName, $extension);
                         $path = Storage::disk('protected')->putFileAs($path, $file, $fileName);
@@ -135,7 +148,7 @@ class TicketSupportController extends FrontendController
                 $extension = $file->extension();
                 $originalFileName = $file->getClientOriginalName();
                 $baseName = pathinfo($originalFileName, PATHINFO_FILENAME);
-                $path = 'ticket-supports/'. date('Y/m/d');
+                $path = 'ticket-supports/'.date('Y/m/d');
 
                 $fileName = $this->getUniqueFileUpload($path, $baseName, $extension);
                 $path = Storage::disk('protected')->putFileAs($path, $file, $fileName);

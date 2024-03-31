@@ -20,8 +20,12 @@ class TicketSupportCollection extends ResourceCollection
             fn($item) => [
                 'id' => $item->id,
                 'title' => $item->title,
+                'type' => [
+                    'name' => $item->type->name,
+                ],
                 'created_by' => [
-                    'name' => $item->createdBy?->name,
+                    'name' => $item->user?->name,
+                    'email' => $item->user?->email,
                 ],
                 'status' => $item->status,
                 'status_label' => $item->status_label,

@@ -1,100 +1,132 @@
 {% if input_get('id') %}
     <form action="{{ url('ajax/ticket-support/'~ticketSupport.id~'/comment') }}"
-        method="post"
-        class="form-ajax"
-        data-success="ticket_support_success_handle"
-        enctype="multipart/form-data">
-        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="form-group">
-                    <label>{{ __('Type') }}</label>
-                    <input type="text" class="form-control" placeholder="{{ __('Type') }}" disabled value="{{ ticketSupport.type.name }}">
+          method="post"
+          class="form-ajax"
+          data-success="ticket_support_success_handle"
+          enctype="multipart/form-data"
+    >
+
+        {{ csrf_field() }}
+
+        <div class="form-group">
+            <label for="comment">{{ __('Comment') }}</label>
+            <textarea class="form-control" id="comment" rows="9" name="content"
+                      required="">{{ ticketSupport.comment }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="files">{{ __('Attachments') }}</label>
+            <input class="form-control" type="file" id="files" name="files[]" multiple>
+        </div>
+
+        <button type="submit" class="btn btn-primary"
+                data-loading-text="{{ __('Please wait...') }}">{{ __('Submit') }}</button>
+
+    </form>
+
+    {% for comment in ticketSupportComments %}
+        <div class="ticket-reply markdown-content">
+            <div class="date">
+                {{ comment.created_at }}
+            </div>
+            <div class="user">
+                <i class="fa fa-user"></i>
+                <span class="name">
+                    {{ comment.user.name }}
+                    <span class="label requestor-type-owner">
+                        Owner
+                    </span>
+                </span>
+            </div>
+            <div class="message">
+                {{ comment.content }}
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label>{{ __('File') }}</label>
                 </div>
-                <div class="form-group">
-                    <label>{{ __('Title') }}</label>
-                    <input type="text" class="form-control" placeholder="{{ __('Title') }}" disabled value="{{ ticketSupport.title }}">
+                {% for attachment in comment.attachments %}
+                    <div class="col-md-3">
+                        <a href="{{ url('ajax/ticket-support/download-attachments')~'?ticket_support_id='~ticketSupport.id~'&attachment_id='~attachment.id }}"
+                           class="download-attachment"
+                        >{{ attachment.name }}</a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+
+    <div class="ticket-reply markdown-content card">
+        <div class="card-header row">
+
+            <div class="user col-md-9">
+                <i class="fa fa-user"></i>
+                <span class="name">
+                    {{ ticketSupport.created_by.name }}
+                    <span class="label requestor-type-owner badge badge-info">
+                        {{ __('Owner') }}
+                        </span>
+                    </span>
+
+                <div class="type">
+                    <b>{{ ticketSupport.created_by.email }}</b>
                 </div>
-                <div class="form-group">
-                    <label>{{ __('Content') }}</label>
-                    <textarea class="form-control" rows="5" disabled>{{ ticketSupport.content }}</textarea>
-                </div>
+            </div>
+            <div class="date col-md-3">
+                {{ ticketSupport.created_at }}
+            </div>
+        </div>
+
+        <div class="card-body message">
+            {{ ticketSupport.content }}
+
+            {% if ticketSupport.attachments %}
+                <hr>
                 <div class="row">
                     <div class="col-md-12">
-                        <label>{{ __('File') }}</label>
+                        <label>{{ __('Attachments') }}</label>
                     </div>
                     {% for attachment in ticketSupport.attachments %}
                         <div class="col-md-3">
                             <a href="{{ url('ajax/ticket-support/download-attachments')~'?ticket_support_id='~ticketSupport.id~'&attachment_id='~attachment.id }}"
-                                class="download-attachment"
+                               class="download-attachment"
                             >{{ attachment.name }}</a>
                         </div>
                     {% endfor %}
                 </div>
-                <hr>
-                <div class="form-group">
-                    <h3>{{ __('Comment') }}</h3>
-                    {% for comment in ticketSupportComments %}
-                        <div class="form-group">
-                            <label for="comment">{{ __('Content') }}</label>
-                            <textarea class="form-control" id="comment" rows="5" disabled>{{ comment.content }}</textarea>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-12">
-                                <label>{{ __('File') }}</label>
-                            </div>
-                            {% for attachment in comment.attachments %}
-                                <div class="col-md-3">
-                                    <a href="{{ url('ajax/ticket-support/download-attachments')~'?ticket_support_id='~ticketSupport.id~'&attachment_id='~attachment.id }}"
-                                        class="download-attachment"
-                                    >{{ attachment.name }}</a>
-                                </div>
-                            {% endfor %}
-                        </div>
-                        <hr>
-                    {% endfor %}
-                </div>
-                <div class="form-group">
-                    <label for="comment">{{ __('Comment') }}</label>
-                    <textarea class="form-control" id="comment" rows="9" name="content" required="">{{ ticketSupport.comment }}</textarea>
-                </div>
-                <div class="form-group">
-                    <label for="files">{{ __('Attachments') }}</label>
-                    <input class="form-control" type="file" id="files" name="files[]" multiple>
-                </div>
-            </div>
+            {% endif %}
         </div>
-        <button type="submit" class="btn btn-primary" data-loading-text="{{ __('Please wait...') }}">{{ __('Submit') }}</button>
-    </form>
+    </div>
+
 {% else %}
     <div class="table-responsive mb-3">
         <div class="text-right">
-            <a href="{{ home_url('profile/ticket-supports/create') }}" class="btn btn-primary rounded btn-sm ">{{ __('Add Ticket Support') }}</a>
+            <a href="{{ home_url('profile/support-tickets/create') }}"
+               class="btn btn-primary rounded btn-sm ">{{ __('Open Ticket') }}</a>
         </div>
     </div>
     <table class="table table-hover table-striped text-center">
         <thead>
-            <tr>
-            <th scope="col"></th>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">{{ __('Type') }}</th>
             <th scope="col">{{ __('Title') }}</th>
             <th scope="col">{{ __('Status') }}</th>
             <th scope="col">{{ __('Created at') }}</th>
-            <th scope="col">{{ __('Action') }}</th>
-            </tr>
+        </tr>
         </thead>
         <tbody>
         {% for index,ticketSupport in ticketSupports.data %}
             <tr>
                 <th scope="row">{{ index + 1 }}</th>
-                <td>{{ ticketSupport.title }}</td>
-                <td>{{ ticketSupport.status }}</td>
-                <td>{{ ticketSupport.created_at }}</td>
+                <td>{{ ticketSupport.type.name }}</td>
                 <td>
-                    <a href="{{ url('profile/ticket-supports') }}?id={{ ticketSupport.id }}" class="btn btn-primary rounded btn-sm ">
-                        {{ __('Edit') }}
+                    <a href="{{ url('profile/support-tickets') }}?id={{ ticketSupport.id }}">
+                        {{ ticketSupport.title }}
                     </a>
                 </td>
+                <td>{{ ticketSupport.status }}</td>
+                <td>{{ ticketSupport.created_at }}</td>
             </tr>
         {% endfor %}
         </tbody>
@@ -102,7 +134,8 @@
 
     <div class="mx-auto">
         <div class="pagination-area">
-            <div class="pagination wow fadeIn animated" data-wow-duration="2s" data-wow-delay="0.5s" style="visibility: visible; animation-duration: 2s; animation-delay: 0.5s; animation-name: fadeIn;">
+            <div class="pagination wow fadeIn animated" data-wow-duration="2s" data-wow-delay="0.5s"
+                 style="visibility: visible; animation-duration: 2s; animation-delay: 0.5s; animation-name: fadeIn;">
                 {{ paginate_links(ticketSupports, 'theme::components.pagination') }}
             </div>
         </div>
@@ -112,7 +145,7 @@
 <script>
     function ticket_support_success_handle(form, res) {
         if (res.status) {
-            window.location.href = "{{ url('profile/ticket-supports') }}";
+            window.location.href = "{{ url('profile/support-tickets') }}";
         }
     }
 </script>
