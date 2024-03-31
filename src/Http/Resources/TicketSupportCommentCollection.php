@@ -22,6 +22,7 @@ class TicketSupportCommentCollection extends ResourceCollection
                 'content' => htmlentities($item->content),
                 'attachments' => TicketSupportAttachmentCollection::make($item->attachments),
                 'created_by' => [
+                    'id' => $item->createdBy?->id,
                     'name' => $item->createdBy?->name,
                     'email' => $item->createdBy?->email,
                 ],

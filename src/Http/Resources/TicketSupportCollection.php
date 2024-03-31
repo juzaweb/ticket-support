@@ -24,6 +24,7 @@ class TicketSupportCollection extends ResourceCollection
                     'name' => $item->type->name,
                 ],
                 'created_by' => [
+                    'id' => $item->createdBy?->id,
                     'name' => $item->createdBy?->name,
                     'email' => $item->createdBy?->email,
                 ],

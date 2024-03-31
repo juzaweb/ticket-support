@@ -1,29 +1,46 @@
 {% if input_get('id') %}
-    <form action="{{ url('ajax/ticket-support/'~ticketSupport.id~'/comment') }}"
-          method="post"
-          class="form-ajax"
-          data-success="ticket_support_success_handle"
-          enctype="multipart/form-data"
-          style="display: none;"
-    >
+    <div id="accordion" class="mb-3">
+        <div class="card">
+            <div class="card-header" id="headingOne">
+                <h5 class="mb-0">
+                    <button class="btn btn-link"
+                            data-toggle="collapse"
+                            data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        <i class="fa fa-pen"></i> {{ __('Reply') }}
+                    </button>
+                </h5>
+            </div>
 
-        {{ csrf_field() }}
+            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                <div class="card-body">
+                    <form action="{{ url('ajax/ticket-support/'~ticketSupport.id~'/comment') }}"
+                          method="post"
+                          class="form-ajax"
+                          data-success="ticket_support_success_handle"
+                          enctype="multipart/form-data"
+                    >
 
-        <div class="form-group">
-            <label for="comment">{{ __('Comment') }}</label>
-            <textarea class="form-control" id="comment" rows="9" name="content"
-                      required="">{{ ticketSupport.comment }}</textarea>
+                        {{ csrf_field() }}
+
+                        <div class="form-group">
+                            <label for="comment">{{ __('Comment') }}</label>
+                            <textarea class="form-control" id="comment" rows="9" name="content"
+                                      required="">{{ ticketSupport.comment }}</textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="files">{{ __('Attachments') }}</label>
+                            <input class="form-control" type="file" id="files" name="files[]" multiple>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary"
+                                data-loading-text="{{ __('Please wait...') }}">{{ __('Submit') }}</button>
+
+                    </form>
+                </div>
+            </div>
         </div>
-
-        <div class="form-group">
-            <label for="files">{{ __('Attachments') }}</label>
-            <input class="form-control" type="file" id="files" name="files[]" multiple>
-        </div>
-
-        <button type="submit" class="btn btn-primary"
-                data-loading-text="{{ __('Please wait...') }}">{{ __('Submit') }}</button>
-
-    </form>
+    </div>
 
     {% for comment in ticketSupportComments %}
         <div class="ticket-reply markdown-content card mb-3">
@@ -32,8 +49,13 @@
                     <i class="fa fa-user"></i>
                     <span class="name">
                         {{ comment.created_by.name }}
+
                         <span class="label requestor-type-owner badge badge-info">
-                            {{ __('Owner') }}
+                            {% if ticketSupport.created_by.id == comment.created_by.id %}
+                                {{ __('Owner') }}
+                            {% else %}
+                                {{ __('Staff') }}
+                            {% endif %}
                         </span>
                     </span>
                 </div>
@@ -46,9 +68,10 @@
             <div class="card-body message">
                 {{ comment.content }}
 
+                {% if comment.attachments %}
                 <div class="row">
                     <div class="col-md-12">
-                        <label>{{ __('File') }}</label>
+                        <label>{{ __('Attachments') }}</label>
                     </div>
                     {% for attachment in comment.attachments %}
                         <div class="col-md-3">
@@ -58,6 +81,7 @@
                         </div>
                     {% endfor %}
                 </div>
+                {% endif %}
             </div>
         </div>
     {% endfor %}
@@ -68,6 +92,7 @@
                 <i class="fa fa-user"></i>
                 <span class="name">
                     {{ ticketSupport.created_by.name }}
+
                     <span class="label requestor-type-owner badge badge-info">
                         {{ __('Owner') }}
                         </span>
