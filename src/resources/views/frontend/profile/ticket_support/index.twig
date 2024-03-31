@@ -10,17 +10,15 @@
     <table class="table table-hover table-striped text-center">
         <thead>
             <tr>
-                <th scope="col">#</th>
-                <th scope="col">{{ __('Type') }}</th>
+                <th scope="col" class="w-25">{{ __('Type') }}</th>
                 <th scope="col">{{ __('Title') }}</th>
-                <th scope="col">{{ __('Status') }}</th>
-                <th scope="col">{{ __('Created at') }}</th>
+                <th scope="col" class="w-25">{{ __('Status') }}</th>
+                <th scope="col" class="w-25">{{ __('Created at') }}</th>
             </tr>
         </thead>
         <tbody>
         {% for index,ticketSupport in ticketSupports.data %}
             <tr>
-                <th scope="row">{{ index + 1 }}</th>
                 <td>{{ ticketSupport.type.name }}</td>
                 <td>
                     <a href="{{ url('profile/support-tickets') }}?id={{ ticketSupport.id }}">
