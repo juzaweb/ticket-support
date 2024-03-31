@@ -4,6 +4,7 @@
           class="form-ajax"
           data-success="ticket_support_success_handle"
           enctype="multipart/form-data"
+          style="display: none;"
     >
 
         {{ csrf_field() }}
@@ -25,40 +26,44 @@
     </form>
 
     {% for comment in ticketSupportComments %}
-        <div class="ticket-reply markdown-content">
-            <div class="date">
-                {{ comment.created_at }}
-            </div>
-            <div class="user">
-                <i class="fa fa-user"></i>
-                <span class="name">
-                    {{ comment.user.name }}
-                    <span class="label requestor-type-owner">
-                        Owner
+        <div class="ticket-reply markdown-content card mb-3">
+            <div class="card-header row">
+                <div class="user col-md-9">
+                    <i class="fa fa-user"></i>
+                    <span class="name">
+                        {{ comment.created_by.name }}
+                        <span class="label requestor-type-owner badge badge-info">
+                            {{ __('Owner') }}
+                        </span>
                     </span>
-                </span>
-            </div>
-            <div class="message">
-                {{ comment.content }}
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <label>{{ __('File') }}</label>
                 </div>
-                {% for attachment in comment.attachments %}
-                    <div class="col-md-3">
-                        <a href="{{ url('ajax/ticket-support/download-attachments')~'?ticket_support_id='~ticketSupport.id~'&attachment_id='~attachment.id }}"
-                           class="download-attachment"
-                        >{{ attachment.name }}</a>
+
+                <div class="date col-md-3">
+                    {{ comment.created_at }}
+                </div>
+            </div>
+
+            <div class="card-body message">
+                {{ comment.content }}
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <label>{{ __('File') }}</label>
                     </div>
-                {% endfor %}
+                    {% for attachment in comment.attachments %}
+                        <div class="col-md-3">
+                            <a href="{{ url('ajax/ticket-support/download-attachments')~'?ticket_support_id='~ticketSupport.id~'&attachment_id='~attachment.id }}"
+                               class="download-attachment"
+                            >{{ attachment.name }}</a>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     {% endfor %}
 
     <div class="ticket-reply markdown-content card">
         <div class="card-header row">
-
             <div class="user col-md-9">
                 <i class="fa fa-user"></i>
                 <span class="name">
@@ -107,13 +112,13 @@
     </div>
     <table class="table table-hover table-striped text-center">
         <thead>
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col">{{ __('Type') }}</th>
-            <th scope="col">{{ __('Title') }}</th>
-            <th scope="col">{{ __('Status') }}</th>
-            <th scope="col">{{ __('Created at') }}</th>
-        </tr>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">{{ __('Type') }}</th>
+                <th scope="col">{{ __('Title') }}</th>
+                <th scope="col">{{ __('Status') }}</th>
+                <th scope="col">{{ __('Created at') }}</th>
+            </tr>
         </thead>
         <tbody>
         {% for index,ticketSupport in ticketSupports.data %}

@@ -20,7 +20,12 @@ class TicketSupportCommentCollection extends ResourceCollection
             fn($item) => [
                 'id' => $item->id,
                 'content' => htmlentities($item->content),
-                'attachments' => TicketSupportAttachmentCollection::make($item->attachments)
+                'attachments' => TicketSupportAttachmentCollection::make($item->attachments),
+                'created_by' => [
+                    'name' => $item->createdBy?->name,
+                    'email' => $item->createdBy?->email,
+                ],
+                'created_at' => jw_date_format($item->created_at),
             ]
         )->toArray();
     }
