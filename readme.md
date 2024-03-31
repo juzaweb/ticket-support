@@ -8,3 +8,4 @@ Open and management support **tickets** for your websites
 - [ ] Auto close ticket after x days
 - [ ] Editor for contents
 - [ ] Notification for staff
+- [ ] Rating for support
