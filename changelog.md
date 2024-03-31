@@ -1,3 +1,7 @@
+### v1.0.2 
+* :+1: Support ticket profile
+* :+1: Fake image plugin
+
 ### v1.0.1 
 * :sparkles: add edit ticket support in profile
 * :sparkles: add page list and create in profile frontend
