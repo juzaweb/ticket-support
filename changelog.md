@@ -1,3 +1,8 @@
+### v1.0.3 
+* :+1: Update composer.json
+* :+1: Add readme
+* :+1: Support ticket profile
+
 ### v1.0.2 
 * :+1: Support ticket profile
 * :+1: Fake image plugin
